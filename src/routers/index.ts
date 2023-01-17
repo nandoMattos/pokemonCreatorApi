@@ -1,8 +1,8 @@
 import { Router } from "express";
-import championsRouter from "../routers/championsRouter.js"
+import pokemonsRouter from "./pokemonsRouter.js"
 
 const router = Router();
 
-router.use(championsRouter)
+router.use(pokemonsRouter)
 
 export default router;
