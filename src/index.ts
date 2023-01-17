@@ -1,9 +1,11 @@
 import express from "express";
-import { getChampions } from "./controllers/championsController.js";
+import router from "./routers/index.js";
 
 const server = express();
+server.use(express.json());
 
-server.get("/champions", getChampions);
+
+server.use(router);
 
 const port = 4000;
 server.listen(port, () => {
