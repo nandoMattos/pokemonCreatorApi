@@ -1,15 +1,21 @@
 import { Request, Response } from "express";
 import { Pokemon } from "../protocols/Pokemon.js";
 import { pokemonRepository } from "../repositories/pokemonRepository.js";
-import { insertNonExistentTypes } from "../services/pokemonService.js";
+import { insertPokemonAndTypes } from "../services/pokemonService.js";
 
 export async function postPokemon(req: Request, res: Response) {
   const newPokemon = req.body as Pokemon;
-  const insertedIds = await insertNonExistentTypes(newPokemon.type);
-  newPokemon.typeId = insertedIds;
-  await pokemonRepository.insertOne(newPokemon);
-
-  // const pokemonType = await pokemonRepository.
+  insertPokemonAndTypes(newPokemon);
 
   return res.sendStatus(201);
+}
+
+export async function getPokemonsAndTypes(req: Request, res: Response) {
+  const result = await pokemonRepository.findAllPokemonsWithTypes();
+  const allPokemons: Pokemon[] = result.rows;
+  res.send(
+    allPokemons.map((p) => {
+      return { name: p.name, weight: p.weight };
+    })
+  );
 }

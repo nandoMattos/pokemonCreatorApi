@@ -6,12 +6,12 @@ function insertOne(pokemon: Pokemon) {
   return connection.query(
     `
     INSERT INTO pokemons
-    (name, weight, id_type, id_type2)
+    (name, weight)
     VALUES
-    ($1, $2, $3, $4)
+    ($1, $2)
     RETURNING id;
   `,
-    [pokemon.name, pokemon.weight, pokemon.typeId[0], pokemon.typeId[1]]
+    [pokemon.name, pokemon.weight]
   );
 }
 
@@ -26,7 +26,29 @@ function findPokemonByName(pokemonName: string): Promise<QueryResult<Pokemon>> {
   );
 }
 
+function insertPokemon_type(pokemonId: number, typeId: number[]) {
+  return connection.query(
+    `
+    INSERT INTO pokemon_type
+    (id_pokemon, id_type)
+    VALUES
+    ($1, $2) ${typeId[1] && ", ($1, $3)"};
+  `,
+    [pokemonId, typeId[0], typeId[1]]
+  );
+}
+
+function findAllPokemonsWithTypes(): Promise<QueryResult<any>> {
+  return connection.query(`
+    SELECT p.name, p.weight, t1.name as "type1", t2.name as "type2"
+    FROM pokemons p
+    LEFT JOIN types t1 on p.id_type = t1.id
+    LEFT JOIN types t2 ON p.id_type2 = t2.id;
+  `);
+}
 export const pokemonRepository = {
   insertOne,
   findPokemonByName,
+  insertPokemon_type,
+  findAllPokemonsWithTypes,
 };
