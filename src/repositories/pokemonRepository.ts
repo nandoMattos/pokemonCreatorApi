@@ -6,23 +6,23 @@ function insertOne(pokemon: Pokemon) {
   return connection.query(
     `
     INSERT INTO pokemons
-    (name, weight)
+    (name, weight, id_type, id_type2)
     VALUES
-    ($1, $2)
+    ($1, $2, $3, $4)
     RETURNING id;
   `,
-    [pokemon.name, pokemon.weight]
+    [pokemon.name, pokemon.weight, pokemon.typeId[0], pokemon.typeId[1]]
   );
 }
 
-function findPokemonByName(pokemon: Pokemon): Promise<QueryResult<Pokemon>> {
+function findPokemonByName(pokemonName: string): Promise<QueryResult<Pokemon>> {
   return connection.query(
     `
-    SELECT * 
+    SELECT *
     FROM pokemons
     WHERE name = $1;
   `,
-    [pokemon.name]
+    [pokemonName]
   );
 }
 

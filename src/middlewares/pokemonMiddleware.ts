@@ -8,7 +8,9 @@ export async function pokemonNameExistsMiddleware(
   next: NextFunction
 ) {
   const newPokemon = req.body as Pokemon;
-  const pokemonExists = await pokemonRepository.findPokemonByName(newPokemon);
+  const pokemonExists = await pokemonRepository.findPokemonByName(
+    newPokemon.name
+  );
   if (pokemonExists.rows[0]) {
     res.status(409).send(`Pokemon "${newPokemon.name}" already exists`);
     return;
