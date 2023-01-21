@@ -1,5 +1,6 @@
 import { QueryResult } from "pg";
 import connection from "../database/db.js";
+import { PokemonType } from "../protocols/PokemonType.js";
 
 function insertOne(typeName: string): Promise<QueryResult<any>> {
   return connection.query(
@@ -14,10 +15,10 @@ function insertOne(typeName: string): Promise<QueryResult<any>> {
   );
 }
 
-function findTypeByName(typeName: string): Promise<QueryResult> {
+function findTypeByName(typeName: string): Promise<QueryResult<PokemonType>> {
   return connection.query(
     `
-    SELECT id
+    SELECT id, name
     FROM types
     WHERE name = $1
   `,

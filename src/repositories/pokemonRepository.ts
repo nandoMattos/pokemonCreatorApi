@@ -1,8 +1,9 @@
 import { QueryResult } from "pg";
 import connection from "../database/db.js";
-import { Pokemon } from "../protocols/Pokemon.js";
+import { PokemonBody, PokemonEntity } from "../protocols/Pokemon.js";
+import { PokemonType } from "../protocols/PokemonType.js";
 
-function insertOne(pokemon: Pokemon) {
+function insertOne(pokemon: PokemonBody) {
   return connection.query(
     `
     INSERT INTO pokemons
@@ -15,35 +16,49 @@ function insertOne(pokemon: Pokemon) {
   );
 }
 
-function findPokemonByName(pokemonName: string): Promise<QueryResult<Pokemon>> {
+function findPokemonByName(
+  pokemonName: string
+): Promise<QueryResult<PokemonEntity>> {
   return connection.query(
     `
-    SELECT *
-    FROM pokemons
-    WHERE name = $1;
+    SELECT p.id, p.name, p.weight,
+    json_agg(
+      t.name
+    ) as type
+    FROM pokemons p
+    LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
+    LEFT JOIN types t ON t.id = pt.id_type
+    WHERE p.name = $1
+    GROUP BY p.id;
   `,
     [pokemonName]
   );
 }
 
-function insertPokemon_type(pokemonId: number, typeId: number[]) {
+function insertPokemon_type(pokemonId: number, pokemonTypes: PokemonType[]) {
+  let pokemonAndTypeId: number[] = [pokemonId, pokemonTypes[0].id];
+  pokemonTypes[1] && pokemonAndTypeId.push(pokemonTypes[1].id);
   return connection.query(
     `
     INSERT INTO pokemon_type
     (id_pokemon, id_type)
     VALUES
-    ($1, $2) ${typeId[1] && ", ($1, $3)"};
+    ($1, $2) ${pokemonTypes[1] === undefined ? "" : ", ($1, $3)"};
   `,
-    [pokemonId, typeId[0], typeId[1]]
+    pokemonAndTypeId
   );
 }
 
-function findAllPokemonsWithTypes(): Promise<QueryResult<any>> {
+function findAllPokemonsWithTypes(): Promise<QueryResult<PokemonBody>> {
   return connection.query(`
-    SELECT p.name, p.weight, t1.name as "type1", t2.name as "type2"
+    SELECT p.id, p.name, p.weight,
+    json_agg(
+      t.name
+    ) as type
     FROM pokemons p
-    LEFT JOIN types t1 on p.id_type = t1.id
-    LEFT JOIN types t2 ON p.id_type2 = t2.id;
+    LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
+    LEFT JOIN types t ON t.id = pt.id_type
+    GROUP BY p.id;
   `);
 }
 export const pokemonRepository = {

@@ -1,7 +1,12 @@
-export type Pokemon = {
-  id?: number;
+export type PokemonEntity = {
+  id: number;
   name: string;
   weight: number;
-  typeId?: number[];
-  type: string[];
 };
+
+export type PokemonBody = {
+  id?:number;
+  name: string;
+  weight: number;
+  type: string[];
+}
