@@ -23,3 +23,23 @@ export async function pokemonNameExistsMiddleware(
     res.sendStatus(500);
   }
 }
+
+export async function pokemonIdExistsMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const pokemonId: number = Number(req.params.id);
+    const pokemonExists = await pokemonRepository.findPokemonById(pokemonId);
+    if (!pokemonExists.rows[0]) {
+      res.send(404).send("Pokemon not found");
+      return;
+    }
+
+    next();
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}

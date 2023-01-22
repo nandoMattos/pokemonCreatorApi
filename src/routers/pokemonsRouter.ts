@@ -2,10 +2,14 @@ import { Router } from "express";
 import {
   getPokemonsAndTypes,
   postPokemon,
+  putPokemon,
 } from "../controllers/pokemonsController.js";
-import { pokemonNameExistsMiddleware } from "../middlewares/pokemonMiddleware.js";
+import {
+  pokemonIdExistsMiddleware,
+  pokemonNameExistsMiddleware,
+} from "../middlewares/pokemonMiddleware.js";
 import { validateSchemaMiddleware } from "../middlewares/validateSchemaMiddleware.js";
-import { pokemonSchema } from "../models/pokemonSchema.js";
+import { pokemonSchema, pokemonSchemaNoType } from "../models/pokemonSchema.js";
 
 const router = Router();
 
@@ -17,5 +21,13 @@ router.post(
 );
 
 router.get("/pokemons", getPokemonsAndTypes);
+
+router.put(
+  "/pokemons/:id",
+  validateSchemaMiddleware(pokemonSchemaNoType),
+  pokemonNameExistsMiddleware,
+  pokemonIdExistsMiddleware,
+  putPokemon
+);
 
 export default router;

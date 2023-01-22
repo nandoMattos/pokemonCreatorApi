@@ -1,4 +1,5 @@
 import { QueryResult } from "pg";
+import { PokemonBodyNoTypes } from "../controllers/pokemonsController.js";
 import connection from "../database/db.js";
 import { PokemonBody, PokemonEntity } from "../protocols/Pokemon.js";
 import { PokemonType } from "../protocols/PokemonType.js";
@@ -16,22 +17,14 @@ function insertOne(pokemon: PokemonBody) {
   );
 }
 
-function findPokemonByName(
-  pokemonName: string
-): Promise<QueryResult<PokemonEntity>> {
+function updatePokemon(newPokemon: PokemonBodyNoTypes) {
   return connection.query(
     `
-    SELECT p.id, p.name, p.weight,
-    json_agg(
-      t.name
-    ) as type
-    FROM pokemons p
-    LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
-    LEFT JOIN types t ON t.id = pt.id_type
-    WHERE p.name = $1
-    GROUP BY p.id;
+    UPDATE pokemons
+    SET name = $1, weight = $2
+    WHERE id = $3;
   `,
-    [pokemonName]
+    [newPokemon.name, newPokemon.weight, newPokemon.id]
   );
 }
 
@@ -61,9 +54,44 @@ function findAllPokemonsWithTypes(): Promise<QueryResult<PokemonBody>> {
     GROUP BY p.id;
   `);
 }
+
+function findPokemonByName(
+  pokemonName: string
+): Promise<QueryResult<PokemonEntity>> {
+  return connection.query(
+    `
+    SELECT p.id, p.name, p.weight,
+    json_agg(
+      t.name
+    ) as type
+    FROM pokemons p
+    LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
+    LEFT JOIN types t ON t.id = pt.id_type
+    WHERE p.name = $1
+    GROUP BY p.id;
+  `,
+    [pokemonName]
+  );
+}
+
+function findPokemonById(
+  pokemonId: number
+): Promise<QueryResult<PokemonEntity>> {
+  return connection.query(
+    `
+    SELECT id, name, weight
+    FROM pokemons
+    WHERE id = $1;
+  `,
+    [pokemonId]
+  );
+}
+
 export const pokemonRepository = {
   insertOne,
   findPokemonByName,
   insertPokemon_type,
   findAllPokemonsWithTypes,
+  findPokemonById,
+  updatePokemon,
 };

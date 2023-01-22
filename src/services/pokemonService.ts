@@ -22,8 +22,8 @@ export async function insertPokemonAndTypes(newPokemon: PokemonBody) {
 export async function insertNonExistentTypes(
   types: PokemonType[]
 ): Promise<PokemonType[]> {
-  let insertedTypes: PokemonType[] = [];
   try {
+    let insertedTypes: PokemonType[] = [];
     for (let type of types) {
       const typeExists = await pokemonTypeRepository.findTypeByName(type.name);
       if (typeExists.rows[0]) {
