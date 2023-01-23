@@ -21,7 +21,11 @@ psql -h HOST_NAME -d YOUR_DATABASE -U USERNAME -f dump.sql
 ```
 
 5. Create and configure your `.env` file using the `.env.example` file
-6. If you want, you can import my thunder-client collection that I used for test features using the `thunder-client_pokemon.json` file
+6. Run dev script:
+```bash
+npm run dev
+```
+7. If you want, you can import my thunder-client collection that I used for test features using the `thunder-client_pokemon.json` file
 - For more infomations of how to import a thunder-client collection, access: https://github.com/rangav/thunder-client-support#importexport
 
 ## API Documentation:
