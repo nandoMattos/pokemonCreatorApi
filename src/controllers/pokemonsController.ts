@@ -39,3 +39,16 @@ export async function putPokemon(req: Request, res: Response) {
     res.sendStatus(404);
   }
 }
+
+export async function deletePokemon(req: Request, res: Response) {
+  try {
+    const id: number = Number(req.params.id);
+
+    await pokemonRepository.deletePokemon_type(id);
+    await pokemonRepository.deletePokemonById(id);
+    res.sendStatus(204);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}

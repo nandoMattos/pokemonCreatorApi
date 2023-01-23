@@ -42,6 +42,16 @@ function insertPokemon_type(pokemonId: number, pokemonTypes: PokemonType[]) {
   );
 }
 
+function deletePokemon_type(pokemonId: number) {
+  return connection.query(
+    `
+    DELETE FROM pokemon_type
+    WHERE id_pokemon = $1;
+  `,
+    [pokemonId]
+  );
+}
+
 function findAllPokemonsWithTypes(): Promise<QueryResult<PokemonBody>> {
   return connection.query(`
     SELECT p.id, p.name, p.weight,
@@ -79,8 +89,27 @@ function findPokemonById(
 ): Promise<QueryResult<PokemonEntity>> {
   return connection.query(
     `
-    SELECT id, name, weight
-    FROM pokemons
+    SELECT p.id, p.name, p.weight,
+    json_agg(
+      json_build_object(
+        'id', t.id,
+        'name', t.name
+      )
+    ) as type
+    FROM pokemons p
+    LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
+    LEFT JOIN types t ON t.id = pt.id_type
+    WHERE p.id = $1
+    GROUP BY p.id;
+  `,
+    [pokemonId]
+  );
+}
+
+function deletePokemonById(pokemonId: number) {
+  return connection.query(
+    `
+    DELETE FROM pokemons
     WHERE id = $1;
   `,
     [pokemonId]
@@ -89,9 +118,11 @@ function findPokemonById(
 
 export const pokemonRepository = {
   insertOne,
-  findPokemonByName,
-  insertPokemon_type,
-  findAllPokemonsWithTypes,
-  findPokemonById,
   updatePokemon,
+  insertPokemon_type,
+  deletePokemon_type,
+  findAllPokemonsWithTypes,
+  findPokemonByName,
+  findPokemonById,
+  deletePokemonById,
 };

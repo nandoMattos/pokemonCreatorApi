@@ -33,7 +33,7 @@ export async function pokemonIdExistsMiddleware(
     const pokemonId: number = Number(req.params.id);
     const pokemonExists = await pokemonRepository.findPokemonById(pokemonId);
     if (!pokemonExists.rows[0]) {
-      res.send(404).send("Pokemon not found");
+      res.status(404).send("Pokemon not found");
       return;
     }
 

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  deletePokemon,
   getPokemonsAndTypes,
   postPokemon,
   putPokemon,
@@ -29,5 +30,7 @@ router.put(
   pokemonIdExistsMiddleware,
   putPokemon
 );
+
+router.delete("/pokemons/:id", pokemonIdExistsMiddleware, deletePokemon);
 
 export default router;

@@ -1,3 +1,5 @@
+import { PokemonType } from "./PokemonType";
+
 export type PokemonEntity = {
   id: number;
   name: string;
@@ -5,8 +7,8 @@ export type PokemonEntity = {
 };
 
 export type PokemonBody = {
-  id?:number;
+  id?: number;
   name: string;
   weight: number;
   type: string[];
-}
+};
