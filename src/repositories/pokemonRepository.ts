@@ -1,7 +1,7 @@
-import { QueryResult } from "pg";
+import { Query, QueryResult } from "pg";
 import { PokemonBodyNoTypes } from "../controllers/pokemonsController.js";
 import connection from "../database/db.js";
-import { PokemonBody, PokemonEntity } from "../protocols/Pokemon.js";
+import { PokemonBody, PokemonWithType } from "../protocols/Pokemon.js";
 import { PokemonType } from "../protocols/PokemonType.js";
 
 function insertOne(pokemon: PokemonBody) {
@@ -75,7 +75,7 @@ function findPokemonsWithTypes(
 
 function findPokemonByName(
   pokemonName: string
-): Promise<QueryResult<PokemonEntity>> {
+): Promise<QueryResult<PokemonBody>> {
   return connection.query(
     `
     SELECT p.id, p.name, p.weight,
@@ -94,7 +94,7 @@ function findPokemonByName(
 
 function findPokemonById(
   pokemonId: number
-): Promise<QueryResult<PokemonEntity>> {
+): Promise<QueryResult<PokemonWithType>> {
   return connection.query(
     `
     SELECT p.id, p.name, p.weight,
@@ -112,6 +112,22 @@ function findPokemonById(
   `,
     [pokemonId]
   );
+}
+
+function findPokemonsAndTypes(): Promise<QueryResult<PokemonWithType>> {
+  return connection.query(`
+  SELECT p.id, p.name, p.weight,
+    json_agg(
+      json_build_object(
+        'id', t.id,
+        'name', t.name
+      )
+    ) as type
+    FROM pokemons p
+    LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
+    LEFT JOIN types t ON t.id = pt.id_type
+    GROUP BY p.id;
+  `);
 }
 
 function deletePokemonById(pokemonId: number) {
@@ -132,5 +148,6 @@ export const pokemonRepository = {
   findPokemonsWithTypes,
   findPokemonByName,
   findPokemonById,
+  findPokemonsAndTypes,
   deletePokemonById,
 };

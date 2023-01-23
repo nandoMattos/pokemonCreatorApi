@@ -1,5 +1,4 @@
-import { string } from "joi";
-import { Query, QueryResult } from "pg";
+import { QueryResult } from "pg";
 import connection from "../database/db.js";
 import { PokemonType } from "../protocols/PokemonType.js";
 
@@ -41,8 +40,20 @@ function findTypes(query?: string): Promise<QueryResult<PokemonType>> {
   );
 }
 
+function findTypeById(id: number): Promise<QueryResult<PokemonType>> {
+  return connection.query(
+    `
+    SELECT id, name
+    FROM types
+    WHERE id = $1;
+  `,
+    [id]
+  );
+}
+
 export const pokemonTypeRepository = {
   insertOne,
   findTypeByName,
   findTypes,
+  findTypeById,
 };

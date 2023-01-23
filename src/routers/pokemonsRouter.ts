@@ -2,12 +2,14 @@ import { Router } from "express";
 import {
   deletePokemon,
   getPokemonsAndTypes,
+  getPokemonsWithType,
   postPokemon,
   putPokemon,
 } from "../controllers/pokemonsController.js";
 import {
   pokemonIdExistsMiddleware,
   pokemonNameExistsMiddleware,
+  typeIdExistsMiddleware,
 } from "../middlewares/pokemonMiddleware.js";
 import { validateSchemaMiddleware } from "../middlewares/validateSchemaMiddleware.js";
 import { pokemonSchema, pokemonSchemaNoType } from "../models/pokemonSchema.js";
@@ -22,6 +24,11 @@ router.post(
 );
 
 router.get("/pokemons", getPokemonsAndTypes);
+router.get(
+  "/pokemons/types/:typeId",
+  typeIdExistsMiddleware,
+  getPokemonsWithType
+);
 
 router.put(
   "/pokemons/:id",

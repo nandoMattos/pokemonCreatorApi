@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { PokemonBody } from "../protocols/Pokemon.js";
 import { pokemonRepository } from "../repositories/pokemonRepository.js";
 import { insertPokemonAndTypes } from "../services/pokemonService.js";
@@ -30,6 +30,31 @@ export async function getPokemonsAndTypes(req: Request, res: Response) {
     console.log(err);
     res.sendStatus(500);
   }
+}
+
+export async function getPokemonsWithType(req: Request, res: Response) {
+  const id: number = Number(req.params.typeId);
+  const pokemonsWithType = await pokemonRepository.findPokemonsAndTypes();
+
+  let indexes: string[] = [];
+  for (let i in pokemonsWithType.rows) {
+    for (let type of pokemonsWithType.rows[i].type) {
+      if (type.id === id) {
+        indexes.push(i);
+      }
+    }
+  }
+  const numberIndexes = indexes.map((i) => Number(i));
+
+  let filteredPokemons = numberIndexes.map((i) => {
+    return {
+      id: pokemonsWithType.rows[i].id,
+      name: pokemonsWithType.rows[i].name,
+      weight: pokemonsWithType.rows[i].weight,
+      type: pokemonsWithType.rows[i].type.map((t) => t.name),
+    };
+  });
+  res.send(filteredPokemons);
 }
 
 export type PokemonBodyNoTypes = Omit<PokemonBody, "type">;
