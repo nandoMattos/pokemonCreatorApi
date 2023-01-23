@@ -26,11 +26,13 @@ psql -h HOST_NAME -d YOUR_DATABASE -U USERNAME -f dump.sql
 
 ## API Documentation:
 
-With PokemonCreator, you can manage your Pokemons inserting their name, weight and types. You can add acctually existent ones or create your owns.
+With PokemonCreator, you can manage your Pokemons inserting their name, weight and types. You can add acctually existent ones or create your owns. <br/>
+OBS: A pokemon can have a max of 2 types
 
 ### Ruotes:
+
 ### `POST /pokemons` <br/> 
-requires a body:
+requires a body in the format:
 ```js
 {
   name: "Bulbasaur"
@@ -38,3 +40,103 @@ requires a body:
   type: ["Grass", "Poison"]
 }
 ```
+
+### `GET /pokemons/?name=pokemonName` <br/>
+- accepts a query to filter pokemon name 
+- returns an array in the format:
+```js
+[
+  {
+    "id": 66,
+    "name": "Squirtle",
+    "weight": 9,
+    "type": [
+      "Water"
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Polywrath",
+    "weight": 54,
+    "type": [
+      "Water",
+      "Fighting"
+    ]
+  }
+]
+```
+
+### `GET /types/?name=pokemonType` <br/>
+- accepts a query to filter type name 
+- returns an array in the format:
+```js
+[
+  {
+    "id": 49,
+    "name": "Grass"
+  },
+  {
+    "id": 50,
+    "name": "Poison"
+  },
+  {
+    "id": 51,
+    "name": "Fire"
+  }
+]
+```
+
+### `GET /pokemons/types/:typeId` <br/>
+- returns all pokemons with correspondent id type
+-  ex: Fire(id:51): 
+```js
+[
+  {
+    "id": 60,
+    "name": "Charmander",
+    "weight": 8.5,
+    "type": [
+      "Fire"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Charizard",
+    "weight": 90.5,
+    "type": [
+      "Fire",
+      "Flying"
+    ]
+  }
+]
+```
+
+### `PUT /pokemons/:id` <br/>
+- updates the Pokemon name and/or weight with correspondent id
+- requires a body in the format:
+```js
+{
+  "name": "Charizard",
+  "weight": 90.5
+}
+```
+
+### `DELETE /pokemons/:id` <br/>
+- deletes Pokemon with correspondent id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
