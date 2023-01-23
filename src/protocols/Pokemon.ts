@@ -1,5 +1,3 @@
-import { PokemonType } from "./PokemonType";
-
 export type PokemonEntity = {
   id: number;
   name: string;

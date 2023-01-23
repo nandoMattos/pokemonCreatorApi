@@ -17,7 +17,13 @@ export async function postPokemon(req: Request, res: Response) {
 
 export async function getPokemonsAndTypes(req: Request, res: Response) {
   try {
-    const allPokemons = await pokemonRepository.findAllPokemonsWithTypes();
+    let pokemonName: string;
+    if (req.query && req.query.name) {
+      pokemonName = (req.query as any).name;
+    }
+    const allPokemons = await pokemonRepository.findPokemonsWithTypes(
+      pokemonName
+    );
 
     res.send(allPokemons.rows);
   } catch (err) {

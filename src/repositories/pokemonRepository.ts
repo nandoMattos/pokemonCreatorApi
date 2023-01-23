@@ -52,8 +52,13 @@ function deletePokemon_type(pokemonId: number) {
   );
 }
 
-function findAllPokemonsWithTypes(): Promise<QueryResult<PokemonBody>> {
-  return connection.query(`
+function findPokemonsWithTypes(
+  query?: string
+): Promise<QueryResult<PokemonBody>> {
+  let arr: string[] = [];
+  query && arr.push(query + "%");
+  return connection.query(
+    `
     SELECT p.id, p.name, p.weight,
     json_agg(
       t.name
@@ -61,8 +66,11 @@ function findAllPokemonsWithTypes(): Promise<QueryResult<PokemonBody>> {
     FROM pokemons p
     LEFT JOIN pokemon_type pt ON p.id = pt.id_pokemon
     LEFT JOIN types t ON t.id = pt.id_type
+    ${query ? "WHERE p.name LIKE $1" : ""}
     GROUP BY p.id;
-  `);
+  `,
+    arr && arr
+  );
 }
 
 function findPokemonByName(
@@ -121,7 +129,7 @@ export const pokemonRepository = {
   updatePokemon,
   insertPokemon_type,
   deletePokemon_type,
-  findAllPokemonsWithTypes,
+  findPokemonsWithTypes,
   findPokemonByName,
   findPokemonById,
   deletePokemonById,
