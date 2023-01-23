@@ -8,3 +8,11 @@ PokemonCreator is an API to create Pokemons with its respective type(s). Soon yo
 and "calculate" which pokemon is waeak/strong against other types.
 
 ## How to run for development
+
+1. Clone this repository
+2. Install all dependencies:
+```bash
+npm i
+```
+3. Create a PostgresSQL database with whatever name you want
+4. Create and configure your `.env` file using the `.env.example` file
