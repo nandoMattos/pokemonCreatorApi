@@ -1,10 +1,11 @@
 {
-  "name": "runeterrachampions",
+  "name": "pokemoncreator",
   "version": "1.0.0",
   "description": "",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "dev": "npx nodemon src/index.ts",
     "start": "tsc && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
